@@ -350,7 +350,7 @@ Bool_t nanoFakes::Process(Long64_t entry)
       
       (Lepton_pt[0] <= 25.) ? event_weight *= eleLowPtPrescale : event_weight *= eleHighPtPrescale;  // Luminosity in fb-1 from brilcalc
       
-      if (Lepton_pt[0] <= 25. && *HLT_Ele12_CaloIdL_TrackIdL_IsoVL_PFJet30 > 0.5) {
+      if (Lepton_pt[0] <= 25. && *HLT_Ele8_CaloIdL_TrackIdL_IsoVL_PFJet30 > 0.5) {
 	
 	passTrigger = true;
 	
@@ -376,7 +376,7 @@ Bool_t nanoFakes::Process(Long64_t entry)
 
     if ((filename.Contains("SingleEle") or filename.Contains("DoubleEG") or filename.Contains("EGamma")) && channel == e) {
       
-      if (Lepton_pt[0] <= 25. && *HLT_Ele12_CaloIdL_TrackIdL_IsoVL_PFJet30 > 0.5) {
+      if (Lepton_pt[0] <= 25. && *HLT_Ele8_CaloIdL_TrackIdL_IsoVL_PFJet30 > 0.5) {
 	
 	passTrigger = true;
 	
@@ -387,6 +387,7 @@ Bool_t nanoFakes::Process(Long64_t entry)
     }
   }
 
+        counter2 ++;
 
   // Away jet determination
   //----------------------------------------------------------------------------
@@ -395,6 +396,8 @@ Bool_t nanoFakes::Process(Long64_t entry)
     TLorentzVector tlvLepton;
   
     tlvLepton.SetPtEtaPhiM(Lepton_pt[0], Lepton_eta[0], Lepton_phi[0], 0);
+
+	  counter1 ++;
 
     for (int i=0; i<njetet; i++) {
     
@@ -423,7 +426,8 @@ Bool_t nanoFakes::Process(Long64_t entry)
       }
 
       bool passJets = (jetIndex != -1);
-
+      //bool passJets = true;
+      
 
       // QCD region
       //------------------------------------------------------------------------
@@ -434,7 +438,7 @@ Bool_t nanoFakes::Process(Long64_t entry)
       passCuts &= (*PuppiMET_pt < 20.);
 
       FillLevelHistograms(FR_00_QCD, i, passJets && passCuts);
-
+      //FillLevelHistograms(FR_00_QCD, i, true);
 
       // Z region
       //------------------------------------------------------------------------
@@ -595,7 +599,7 @@ void nanoFakes::FillLevelHistograms(int icut, int i, bool pass)
 void nanoFakes::FillAnalysisHistograms(int icut, int i)
 {
   float lep1eta = fabs(Lepton_eta[0]);
-  
+
   for (int btag = 0; btag < nbtag ; btag ++) {
 
     btagDirectory = btags[btag]; 

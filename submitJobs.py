@@ -18,12 +18,13 @@ def submit():
     print '#######################################################################' + bcolors.ENDC
 
     parser = optparse.OptionParser(usage='usage: %prog [opts] FilenameWithSamples', version='%prog 1.0')
-    parser.add_option('-q', '--queue', action='store', type=str, dest='queue', default='tomorrow', help='Name of the queue to be used')
+    parser.add_option('-q', '--queue', action='store', type=str, dest='queue', default='longlunch', help='Name of the queue to be used')
     parser.add_option('-d', '--directory', action='store', type=str, dest='inputDir', default='', help='Name of the directory where the samples can be found')
     parser.add_option('-o', '--output', action='store', type=str, dest='outputDir', default=os.getcwd()+'/jobs/', help='Output directory')
     parser.add_option('-w', '--work', action='store', type=str, dest='workDir', default=os.getcwd(), help='Working directory')
     parser.add_option('-y', '--year', action='store', type=str, dest='year', default="", help='Year of the dataset considered (2016, 2017 or 2018)')
     parser.add_option('-t', '--test', action='store_true', dest='doNotSend', default=False, help='Do not send the jobs to the queue, to be used for testing')
+    parser.add_option('-r', '--resubmit', action='store_true', dest='resubmit', default=False, help='Resubmit only the jobs found in the directory but not in results')
     (opts, args) = parser.parse_args()
 
     # Read the options given
@@ -33,6 +34,7 @@ def submit():
     workDir      = opts.workDir
     year         = opts.year
     doNotSend    = opts.doNotSend
+    resubmit     = opts.resubmit
 
     if not os.path.exists("jobs"):
         os.makedirs("jobs")
@@ -76,17 +78,17 @@ def submit():
     for sample in samples:
 
         if year == "2016":
-            if("DYJetsToLL_M-50_ext2__" in sample)or ("DYJetsToLL_M-10to50-LO_" in sample) or ("WJetsToLNu__" in sample) or ("DoubleMuon" in sample) or ("DoubleEG" in sample): 
-                jobs.append(sample)
-
+            if("DYJetsToLL_M-50__" in sample)or ("DYJetsToLL_M-10to50-LO_" in sample) or ("WJetsToLNu__" in sample) or ("DoubleMuon" in sample) or ("DoubleEG" in sample): 
+                if resubmit is False or not os.path.exists('results/'+sample):
+                    jobs.append(sample)
         elif year == "2017":
-            if ("DYJetsToLL_M-10to50-LO_" in sample) or ("DYJetsToLL_M-50__" in sample) or ("WJetsToLNu-LO__" in sample) or ("DoubleMuon" in sample) or ("SingleElectron" in sample):
-            #if "GJets" in sample:
-                jobs.append(sample)
-
+            if ("DYJetsToLL_M-10to50-LO__" in sample) or ("DYJetsToLL_M-50__" in sample) or ("WJetsToLNu-LO__" in sample) or ("DoubleMuon" in sample) or ("SingleElectron" in sample):
+                if resubmit is False or not os.path.exists('results/'+sample):
+                    jobs.append(sample)
         elif year == "2018":
-            if ("DYJetsToLL_M-10to50-LO_" in sample) or ("DYJetsToLL_M-50-LO__" in sample) or ("WJetsToLNu-LO__" in sample) or ("DoubleMuon" in sample) or ("DoubleEG" in sample):
-                jobs.append(sample)
+            if ("DYJetsToLL_M-10to50-LO_" in sample) or ("DYJetsToLL_M-50-LO__" in sample) or ("WJetsToLNu-LO__" in sample) or ("DoubleMuon" in sample) or ("EGamma" in sample):
+                if resubmit is False or not os.path.exists('results/'+sample):
+                    jobs.append(sample)
 
     if len(jobs) == 0:
         print "No file matching the requirements in the directory given has been found"
